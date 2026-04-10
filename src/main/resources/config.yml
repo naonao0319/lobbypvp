@@ -1,0 +1,4 @@
+# PvPAreaPlugin configuration
+# Areas and holograms are populated automatically via commands.
+areas: {}
+holograms: {}

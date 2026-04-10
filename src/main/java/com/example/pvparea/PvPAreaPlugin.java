@@ -38,10 +38,12 @@ public class PvPAreaPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        areaManager.saveAreas();
-        statsManager.saveStats();
-        hologramManager.saveHolograms();
-        hologramManager.clearHolograms(); // remove displays on reload/disable to respawn them later
+        if (areaManager != null) areaManager.saveAreas();
+        if (statsManager != null) statsManager.saveStats();
+        if (hologramManager != null) {
+            hologramManager.saveHolograms();
+            hologramManager.clearHolograms(); // remove displays on reload/disable to respawn them later
+        }
 
         getLogger().info("PvPAreaPlugin has been disabled!");
     }
