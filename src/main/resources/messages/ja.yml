@@ -1,0 +1,24 @@
+# ============================================
+#    PvPAreaPlugin メッセージ — 日本語 (ja)
+#    レガシーカラーコード (&c, &l) および
+#    MiniMessage タグ (<red>, <bold>) に対応しています。
+# ============================================
+
+no-permission: "&c権限がありません。"
+player-only: "&cこのコマンドはプレイヤーのみ使用できます。"
+unknown-subcommand: "&c不明なサブコマンドです。"
+usage-root: "&c使い方: /pvparea <create|remove|hologram|reload>"
+usage-create: "&c使い方: /pvparea create <名前>"
+usage-remove: "&c使い方: /pvparea remove <名前>"
+usage-hologram: "&c使い方: /pvparea hologram <create|remove> <名前>"
+pos1-set: "&aポジション1を設定しました: &f{x}, {y}, {z}"
+pos2-set: "&aポジション2を設定しました: &f{x}, {y}, {z}"
+need-selection: "&c先に金の斧で2つのポジションを選択してください。"
+area-created: "&aPvPエリア '&f{name}&a' を作成しました！"
+area-not-same-world: "&c選択したポジションが同じワールドにありません。"
+area-removed: "&aPvPエリア '&f{name}&a' を削除しました。ホログラムとスタッツもクリアされました。"
+area-not-found: "&cエリアが見つかりません。"
+hologram-created: "&aホログラム '&f{name}&a' を現在地に作成しました。"
+hologram-removed: "&aホログラムを削除しました。"
+hologram-not-found: "&cホログラムが見つかりません。"
+config-reloaded: "&aPvPAreaPlugin の設定をリロードしました。"

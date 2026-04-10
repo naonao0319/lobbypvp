@@ -25,7 +25,8 @@ public class PlayerStats {
     public void addDeath() { deaths++; }
 
     public double getKD() {
-        double ratio = deaths == 0 ? kills : (double) kills / deaths;
-        return Math.round(ratio * 10.0) / 10.0;
+        // Starts at 1.00 (0 kills, 0 deaths). Increases with kills, decreases with deaths.
+        double ratio = (double) (kills + 1) / (deaths + 1);
+        return Math.round(ratio * 100.0) / 100.0;
     }
 }

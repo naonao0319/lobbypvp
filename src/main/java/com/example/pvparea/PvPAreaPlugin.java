@@ -22,12 +22,16 @@ public class PvPAreaPlugin extends JavaPlugin {
     private AreaManager areaManager;
     private StatsManager statsManager;
     private HologramManager hologramManager;
+    private MessageManager messageManager;
 
     @Override
     public void onEnable() {
         instance = this;
         saveDefaultConfig();
         applyConfigDefaults();
+
+        messageManager = new MessageManager(this);
+        messageManager.load();
 
         areaManager = new AreaManager(this);
         statsManager = new StatsManager(this, createStorage());
@@ -92,10 +96,11 @@ public class PvPAreaPlugin extends JavaPlugin {
         }, hologramInterval, hologramInterval);
     }
 
-    /** Reload the config file and reschedule any tick-based tasks. */
+    /** Reload the config file, language messages, and reschedule any tick-based tasks. */
     public void reloadPluginConfig() {
         reloadConfig();
         applyConfigDefaults();
+        if (messageManager != null) messageManager.load();
         getServer().getScheduler().cancelTasks(this);
         scheduleTasks();
     }
@@ -114,13 +119,9 @@ public class PvPAreaPlugin extends JavaPlugin {
         getConfig().options().copyDefaults(true);
     }
 
-    /** Parse a message from the {@code messages.*} config section with placeholder substitution. */
+    /** Parse a message from the language file with placeholder substitution. */
     public Component msg(String key, Object... placeholders) {
-        String template = getConfig().getString("messages." + key, key);
-        for (int i = 0; i + 1 < placeholders.length; i += 2) {
-            template = template.replace("{" + placeholders[i] + "}", String.valueOf(placeholders[i + 1]));
-        }
-        return parseText(template);
+        return messageManager.get(key, placeholders);
     }
 
     /**
@@ -144,4 +145,5 @@ public class PvPAreaPlugin extends JavaPlugin {
     public AreaManager getAreaManager() { return areaManager; }
     public StatsManager getStatsManager() { return statsManager; }
     public HologramManager getHologramManager() { return hologramManager; }
+    public MessageManager getMessageManager() { return messageManager; }
 }

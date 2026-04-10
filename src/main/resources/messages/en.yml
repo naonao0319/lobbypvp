@@ -1,0 +1,24 @@
+# ============================================
+#    PvPAreaPlugin Messages — English (en)
+#    Supports legacy color codes (&c, &l) and
+#    MiniMessage tags (<red>, <bold>).
+# ============================================
+
+no-permission: "&cYou don't have permission to do this."
+player-only: "&cOnly players can use this command."
+unknown-subcommand: "&cUnknown sub-command."
+usage-root: "&cUsage: /pvparea <create|remove|hologram|reload>"
+usage-create: "&cUsage: /pvparea create <name>"
+usage-remove: "&cUsage: /pvparea remove <name>"
+usage-hologram: "&cUsage: /pvparea hologram <create|remove> <name>"
+pos1-set: "&aPosition 1 set to: &f{x}, {y}, {z}"
+pos2-set: "&aPosition 2 set to: &f{x}, {y}, {z}"
+need-selection: "&cYou must select two positions with a Golden Axe first."
+area-created: "&aPvP Area '&f{name}&a' created successfully!"
+area-not-same-world: "&cPositions are not in the same world."
+area-removed: "&aPvP Area '&f{name}&a' removed. Hologram and stats cleared."
+area-not-found: "&cArea not found."
+hologram-created: "&aHologram '&f{name}&a' created at your location."
+hologram-removed: "&aHologram removed."
+hologram-not-found: "&cHologram not found."
+config-reloaded: "&aPvPAreaPlugin config reloaded."
