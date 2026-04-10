@@ -1,0 +1,25 @@
+name: PvPAreaPlugin
+version: '${project.version}'
+main: com.example.pvparea.PvPAreaPlugin
+api-version: '1.21'
+description: A plugin for PvP areas, stats, actionbars, and holograms
+author: You
+
+commands:
+  pvparea:
+    description: Main command for PvP Area management
+    usage: /pvparea <create|remove|hologram>
+    permission: pvparea.admin
+  killtop:
+    description: View the top killers
+    usage: /killtop
+    permission: pvparea.use
+
+permissions:
+  pvparea.admin:
+    description: Admin commands for PvP Area
+    default: op
+  pvparea.use:
+    description: Use commands for PvP Area
+    default: true
+depend: [FancyHolograms]
