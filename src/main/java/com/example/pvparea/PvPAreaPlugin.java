@@ -5,7 +5,12 @@ import com.example.pvparea.storage.StatsStorage;
 import com.example.pvparea.storage.YamlStatsStorage;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 public class PvPAreaPlugin extends JavaPlugin {
 
@@ -20,6 +25,7 @@ public class PvPAreaPlugin extends JavaPlugin {
     public void onEnable() {
         instance = this;
         saveDefaultConfig();
+        applyConfigDefaults();
 
         areaManager = new AreaManager(this);
         statsManager = new StatsManager(this, createStorage());
@@ -87,8 +93,23 @@ public class PvPAreaPlugin extends JavaPlugin {
     /** Reload the config file and reschedule any tick-based tasks. */
     public void reloadPluginConfig() {
         reloadConfig();
+        applyConfigDefaults();
         getServer().getScheduler().cancelTasks(this);
         scheduleTasks();
+    }
+
+    /**
+     * Layer the bundled config.yml over the on-disk config as defaults. Any key the
+     * user hasn't defined will transparently fall back to the value shipped in the jar,
+     * so upgrading the plugin never leaves messages or settings looking empty.
+     */
+    private void applyConfigDefaults() {
+        InputStream in = getResource("config.yml");
+        if (in == null) return;
+        YamlConfiguration defaults = YamlConfiguration.loadConfiguration(
+                new InputStreamReader(in, StandardCharsets.UTF_8));
+        getConfig().setDefaults(defaults);
+        getConfig().options().copyDefaults(true);
     }
 
     /** Parse a message from the {@code messages.*} config section with placeholder substitution. */
