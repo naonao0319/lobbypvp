@@ -63,6 +63,16 @@ public class YamlStatsStorage implements StatsStorage {
     }
 
     @Override
+    public void clear() {
+        YamlConfiguration yaml = new YamlConfiguration();
+        try {
+            yaml.save(file);
+        } catch (IOException e) {
+            plugin.getLogger().severe("Could not clear stats.yml: " + e.getMessage());
+        }
+    }
+
+    @Override
     public void close() {
     }
 }

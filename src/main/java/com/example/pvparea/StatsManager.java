@@ -43,6 +43,13 @@ public class StatsManager {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> storage.save(snapshot));
     }
 
+    /** Wipe every player's stats both in memory and on disk. */
+    public void clearAll() {
+        stats.clear();
+        dirty = false;
+        storage.clear();
+    }
+
     /** Synchronous save + close. Intended for {@code onDisable}. */
     public void close() {
         if (dirty) {

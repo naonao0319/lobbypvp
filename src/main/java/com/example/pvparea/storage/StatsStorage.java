@@ -9,5 +9,7 @@ import java.util.UUID;
 public interface StatsStorage {
     void load(Map<UUID, PlayerStats> out);
     void save(Collection<PlayerStats> snapshot);
+    /** Wipe all persisted stats. */
+    void clear();
     void close();
 }

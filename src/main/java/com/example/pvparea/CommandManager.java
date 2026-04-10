@@ -56,18 +56,18 @@ public class CommandManager implements CommandExecutor, TabCompleter {
             int limit = plugin.getConfig().getInt("killtop.limit", 10);
             List<PlayerStats> top = plugin.getStatsManager().getTopKillers(limit);
 
-            sender.sendMessage(PvPAreaPlugin.mm().deserialize(
-                    plugin.getConfig().getString("killtop.header", "<gray>--- Kill Top ---</gray>")));
+            sender.sendMessage(PvPAreaPlugin.parseText(
+                    plugin.getConfig().getString("killtop.header", "&7--- &6&lKill Top&7 ---")));
 
             if (top.isEmpty()) {
-                sender.sendMessage(PvPAreaPlugin.mm().deserialize(
-                        plugin.getConfig().getString("killtop.empty", "<gray>No data yet.</gray>")));
+                sender.sendMessage(PvPAreaPlugin.parseText(
+                        plugin.getConfig().getString("killtop.empty", "&7No data yet.")));
             } else {
                 String template = plugin.getConfig().getString("killtop.line",
-                        "<yellow>#{rank}</yellow> <white>{name}</white> <gray>-</gray> <red>{kills} Kills</red>");
+                        "&e#{rank} &f{name} &8- &c{kills} Kills");
                 int rank = 1;
                 for (PlayerStats ps : top) {
-                    sender.sendMessage(PvPAreaPlugin.mm().deserialize(template
+                    sender.sendMessage(PvPAreaPlugin.parseText(template
                             .replace("{rank}", String.valueOf(rank))
                             .replace("{name}", ps.getName())
                             .replace("{kills}", String.valueOf(ps.getKills()))));
@@ -106,6 +106,11 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         }
         String name = args[1];
         if (plugin.getAreaManager().removeArea(name)) {
+            // Also drop a hologram with the same name (if any) and wipe all
+            // stats data so the kill top is reset alongside the area.
+            plugin.getHologramManager().removeHologram(name);
+            plugin.getStatsManager().clearAll();
+            plugin.getHologramManager().updateHolograms();
             player.sendMessage(plugin.msg("area-removed", "name", name));
         } else {
             player.sendMessage(plugin.msg("area-not-found"));

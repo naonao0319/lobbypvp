@@ -82,6 +82,16 @@ public class SqliteStatsStorage implements StatsStorage {
     }
 
     @Override
+    public void clear() {
+        if (connection == null) return;
+        try (Statement st = connection.createStatement()) {
+            st.execute("DELETE FROM player_stats");
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to clear stats in SQLite: " + e.getMessage());
+        }
+    }
+
+    @Override
     public void close() {
         if (connection != null) {
             try {

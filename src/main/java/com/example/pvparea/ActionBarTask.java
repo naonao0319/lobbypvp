@@ -27,7 +27,7 @@ public class ActionBarTask extends BukkitRunnable {
                     .replace("{deaths}", String.valueOf(stats.getDeaths()))
                     .replace("{kd}", String.valueOf(stats.getKD()))
                     .replace("{ping}", String.valueOf(player.getPing()));
-            Component message = PvPAreaPlugin.mm().deserialize(rendered);
+            Component message = PvPAreaPlugin.parseText(rendered);
             player.sendActionBar(message);
         }
     }

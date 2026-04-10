@@ -1,6 +1,7 @@
 # ============================================
 #         PvPAreaPlugin Configuration
-#   All messages use MiniMessage formatting.
+#   Messages accept legacy color codes (e.g. &c,
+#   &l) as well as MiniMessage tags (<red>, <bold>).
 # ============================================
 
 # Storage backend for player stats.
@@ -34,37 +35,37 @@ kill-effects:
 actionbar:
   enabled: true
   interval-ticks: 20
-  format: "<gold>PvP Area</gold> <dark_gray>|</dark_gray> <gray>Kills:</gray> <red>{kills}</red> <dark_gray>|</dark_gray> <gray>Deaths:</gray> <red>{deaths}</red> <dark_gray>|</dark_gray> <gray>K/D:</gray> <red>{kd}</red> <dark_gray>|</dark_gray> <gray>Ping:</gray> <green>{ping}ms</green>"
+  format: "&6PvP Area &8| &7Kills: &c{kills} &8| &7Deaths: &c{deaths} &8| &7K/D: &c{kd} &8| &7Ping: &a{ping}ms"
 
 # Kill top list (used by /killtop and holograms).
 # Hologram / line placeholders: {rank} {name} {kills}
 killtop:
   limit: 10
   hologram-refresh-ticks: 100
-  header: "<gray>---</gray> <gold><bold>Kill Top</bold></gold> <gray>---</gray>"
-  empty: "<gray>No data yet.</gray>"
-  line: "<yellow>#{rank}</yellow> <white>{name}</white> <dark_gray>-</dark_gray> <red>{kills} Kills</red>"
+  header: "&7--- &6&lKill Top&7 ---"
+  empty: "&7No data yet."
+  line: "&e#{rank} &f{name} &8- &c{kills} Kills"
 
-# Chat / command messages.
+# Chat / command messages. Supports &-color codes.
 messages:
-  no-permission: "<red>You don't have permission to do this.</red>"
-  player-only: "<red>Only players can use this command.</red>"
-  unknown-subcommand: "<red>Unknown sub-command.</red>"
-  usage-root: "<red>Usage: /pvparea <create|remove|hologram|reload></red>"
-  usage-create: "<red>Usage: /pvparea create <name></red>"
-  usage-remove: "<red>Usage: /pvparea remove <name></red>"
-  usage-hologram: "<red>Usage: /pvparea hologram <create|remove> <name></red>"
-  pos1-set: "<green>Position 1 set to: <white>{x}, {y}, {z}</white></green>"
-  pos2-set: "<green>Position 2 set to: <white>{x}, {y}, {z}</white></green>"
-  need-selection: "<red>You must select two positions with a Golden Axe first.</red>"
-  area-created: "<green>PvP Area '<white>{name}</white>' created successfully!</green>"
-  area-not-same-world: "<red>Positions are not in the same world.</red>"
-  area-removed: "<green>PvP Area '<white>{name}</white>' removed.</green>"
-  area-not-found: "<red>Area not found.</red>"
-  hologram-created: "<green>Hologram '<white>{name}</white>' created at your location.</green>"
-  hologram-removed: "<green>Hologram removed.</green>"
-  hologram-not-found: "<red>Hologram not found.</red>"
-  config-reloaded: "<green>PvPAreaPlugin config reloaded.</green>"
+  no-permission: "&cYou don't have permission to do this."
+  player-only: "&cOnly players can use this command."
+  unknown-subcommand: "&cUnknown sub-command."
+  usage-root: "&cUsage: /pvparea <create|remove|hologram|reload>"
+  usage-create: "&cUsage: /pvparea create <name>"
+  usage-remove: "&cUsage: /pvparea remove <name>"
+  usage-hologram: "&cUsage: /pvparea hologram <create|remove> <name>"
+  pos1-set: "&aPosition 1 set to: &f{x}, {y}, {z}"
+  pos2-set: "&aPosition 2 set to: &f{x}, {y}, {z}"
+  need-selection: "&cYou must select two positions with a Golden Axe first."
+  area-created: "&aPvP Area '&f{name}&a' created successfully!"
+  area-not-same-world: "&cPositions are not in the same world."
+  area-removed: "&aPvP Area '&f{name}&a' removed. Hologram and stats cleared."
+  area-not-found: "&cArea not found."
+  hologram-created: "&aHologram '&f{name}&a' created at your location."
+  hologram-removed: "&aHologram removed."
+  hologram-not-found: "&cHologram not found."
+  config-reloaded: "&aPvPAreaPlugin config reloaded."
 
 # DO NOT EDIT BELOW — managed by the plugin.
 areas: {}

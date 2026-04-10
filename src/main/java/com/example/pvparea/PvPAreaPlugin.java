@@ -5,6 +5,7 @@ import com.example.pvparea.storage.StatsStorage;
 import com.example.pvparea.storage.YamlStatsStorage;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -15,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 public class PvPAreaPlugin extends JavaPlugin {
 
     private static final MiniMessage MM = MiniMessage.miniMessage();
+    private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.legacyAmpersand();
     private static PvPAreaPlugin instance;
 
     private AreaManager areaManager;
@@ -118,7 +120,20 @@ public class PvPAreaPlugin extends JavaPlugin {
         for (int i = 0; i + 1 < placeholders.length; i += 2) {
             template = template.replace("{" + placeholders[i] + "}", String.valueOf(placeholders[i + 1]));
         }
-        return MM.deserialize(template);
+        return parseText(template);
+    }
+
+    /**
+     * Parse a string that may contain legacy {@code &}-style color codes and/or
+     * MiniMessage tags. If the string contains an {@code <…>} tag it is parsed as
+     * MiniMessage, otherwise as legacy ampersand.
+     */
+    public static Component parseText(String s) {
+        if (s == null) return Component.empty();
+        if (s.indexOf('<') >= 0 && s.indexOf('>') >= 0) {
+            return MM.deserialize(s);
+        }
+        return LEGACY.deserialize(s);
     }
 
     public static MiniMessage mm() {
