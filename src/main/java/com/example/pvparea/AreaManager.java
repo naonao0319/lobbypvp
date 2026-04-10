@@ -20,8 +20,8 @@ public class AreaManager {
 
     public void loadAreas() {
         areas.clear();
-        FileConfiguration config = plugin.getConfig();
-        ConfigurationSection section = config.getConfigurationSection("areas");
+        FileConfiguration data = plugin.getDataFile().get();
+        ConfigurationSection section = data.getConfigurationSection("areas");
         if (section == null) return;
 
         for (String key : section.getKeys(false)) {
@@ -41,22 +41,22 @@ public class AreaManager {
     }
 
     public void saveAreas() {
-        FileConfiguration config = plugin.getConfig();
-        config.set("areas", null);
+        FileConfiguration data = plugin.getDataFile().get();
+        data.set("areas", null);
 
         for (Map.Entry<String, PvPArea> entry : areas.entrySet()) {
             PvPArea area = entry.getValue();
             String path = "areas." + entry.getKey();
-            config.set(path + ".world", area.getWorld().getName());
-            config.set(path + ".minX", area.getMinX());
-            config.set(path + ".minY", area.getMinY());
-            config.set(path + ".minZ", area.getMinZ());
-            config.set(path + ".maxX", area.getMaxX());
-            config.set(path + ".maxY", area.getMaxY());
-            config.set(path + ".maxZ", area.getMaxZ());
+            data.set(path + ".world", area.getWorld().getName());
+            data.set(path + ".minX", area.getMinX());
+            data.set(path + ".minY", area.getMinY());
+            data.set(path + ".minZ", area.getMinZ());
+            data.set(path + ".maxX", area.getMaxX());
+            data.set(path + ".maxY", area.getMaxY());
+            data.set(path + ".maxZ", area.getMaxZ());
         }
 
-        plugin.saveConfig();
+        plugin.getDataFile().save();
     }
 
     public boolean createArea(String name, Location loc1, Location loc2) {

@@ -49,7 +49,3 @@ killtop:
   header: "&7--- &6&lKill Top&7 ---"
   empty: "&7No data yet."
   line: "&e#{rank} &f{name} &8- &c{kills} Kills"
-
-# DO NOT EDIT BELOW — managed by the plugin.
-areas: {}
-holograms: {}

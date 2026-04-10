@@ -23,12 +23,16 @@ public class PvPAreaPlugin extends JavaPlugin {
     private StatsManager statsManager;
     private HologramManager hologramManager;
     private MessageManager messageManager;
+    private DataFile dataFile;
 
     @Override
     public void onEnable() {
         instance = this;
         saveDefaultConfig();
         applyConfigDefaults();
+
+        dataFile = new DataFile(this);
+        dataFile.load();
 
         messageManager = new MessageManager(this);
         messageManager.load();
@@ -146,4 +150,5 @@ public class PvPAreaPlugin extends JavaPlugin {
     public StatsManager getStatsManager() { return statsManager; }
     public HologramManager getHologramManager() { return hologramManager; }
     public MessageManager getMessageManager() { return messageManager; }
+    public DataFile getDataFile() { return dataFile; }
 }

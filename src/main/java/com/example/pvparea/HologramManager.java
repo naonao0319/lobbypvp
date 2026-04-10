@@ -23,19 +23,19 @@ public class HologramManager {
 
     public void loadHolograms() {
         holoNames.clear();
-        FileConfiguration config = plugin.getConfig();
-        ConfigurationSection section = config.getConfigurationSection("holograms");
+        FileConfiguration data = plugin.getDataFile().get();
+        ConfigurationSection section = data.getConfigurationSection("holograms");
         if (section != null) holoNames.addAll(section.getKeys(false));
         updateHolograms();
     }
 
     public void saveHolograms() {
-        FileConfiguration config = plugin.getConfig();
-        config.set("holograms", null);
+        FileConfiguration data = plugin.getDataFile().get();
+        data.set("holograms", null);
         for (String name : holoNames) {
-            config.set("holograms." + name, true);
+            data.set("holograms." + name, true);
         }
-        plugin.saveConfig();
+        plugin.getDataFile().save();
     }
 
     public void createHologram(String name, Location loc) {
