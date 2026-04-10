@@ -1,5 +1,9 @@
 package com.example.pvparea;
 
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,13 +22,47 @@ public class CombatListener implements Listener {
         Player victim = event.getEntity();
         Player killer = victim.getKiller();
 
-        boolean victimInArea = plugin.getAreaManager().isInAnyArea(victim.getLocation());
+        if (!plugin.getAreaManager().isInAnyArea(victim.getLocation())) return;
 
-        if (victimInArea) {
-            plugin.getStatsManager().addDeath(victim.getUniqueId(), victim.getName());
+        plugin.getStatsManager().addDeath(victim.getUniqueId(), victim.getName());
 
-            if (killer != null && !killer.equals(victim)) {
-                plugin.getStatsManager().addKill(killer.getUniqueId(), killer.getName());
+        if (killer != null && !killer.equals(victim)) {
+            plugin.getStatsManager().addKill(killer.getUniqueId(), killer.getName());
+            playKillEffects(killer, victim);
+        }
+    }
+
+    private void playKillEffects(Player killer, Player victim) {
+        ConfigurationSection cfg = plugin.getConfig().getConfigurationSection("kill-effects");
+        if (cfg == null) return;
+
+        ConfigurationSection sound = cfg.getConfigurationSection("sound");
+        if (sound != null && sound.getBoolean("enabled", true)) {
+            String name = sound.getString("name", "ENTITY_PLAYER_LEVELUP");
+            try {
+                Sound s = Sound.valueOf(name.toUpperCase());
+                float volume = (float) sound.getDouble("volume", 1.0);
+                float pitch = (float) sound.getDouble("pitch", 1.2);
+                killer.playSound(killer.getLocation(), s, volume, pitch);
+            } catch (IllegalArgumentException ex) {
+                plugin.getLogger().warning("Invalid kill sound name: " + name);
+            }
+        }
+
+        ConfigurationSection particle = cfg.getConfigurationSection("particles");
+        if (particle != null && particle.getBoolean("enabled", true)) {
+            String type = particle.getString("type", "CRIT");
+            try {
+                Particle p = Particle.valueOf(type.toUpperCase());
+                int count = particle.getInt("count", 12);
+                double ox = particle.getDouble("offset-x", 0.3);
+                double oy = particle.getDouble("offset-y", 0.6);
+                double oz = particle.getDouble("offset-z", 0.3);
+                double speed = particle.getDouble("speed", 0.05);
+                Location loc = victim.getLocation().add(0, 1, 0);
+                victim.getWorld().spawnParticle(p, loc, count, ox, oy, oz, speed);
+            } catch (IllegalArgumentException ex) {
+                plugin.getLogger().warning("Invalid kill particle type: " + type);
             }
         }
     }

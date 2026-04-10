@@ -6,7 +6,7 @@
 
     <groupId>com.example</groupId>
     <artifactId>PvPAreaPlugin</artifactId>
-    <version>1.0.2</version>
+    <version>1.1.0</version>
     <packaging>jar</packaging>
 
     <name>PvPAreaPlugin</name>
@@ -18,12 +18,10 @@
     </properties>
 
     <repositories>
-        <!-- Paper Repo -->
         <repository>
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
-        <!-- FancyHolograms Repo -->
         <repository>
             <id>fancyinnovations</id>
             <url>https://repo.fancyinnovations.com/releases</url>
@@ -31,18 +29,23 @@
     </repositories>
 
     <dependencies>
-        <!-- Paper API 1.21.4 -->
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
             <version>1.21.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <!-- FancyHolograms -->
         <dependency>
             <groupId>de.oliver</groupId>
             <artifactId>FancyHolograms</artifactId>
             <version>2.9.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Loaded at runtime by Paper's library loader via plugin.yml -->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.45.3.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

@@ -1,115 +1,85 @@
 package com.example.pvparea;
 
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
+import com.example.pvparea.storage.StatsStorage;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
+/**
+ * Keeps player stats in-memory and coordinates persistence via a {@link StatsStorage}.
+ *
+ * <p>All read/write helpers are expected to run on the main server thread. Actual disk
+ * writes are dispatched asynchronously by {@link #flush()} to avoid blocking the tick.
+ */
 public class StatsManager {
 
     private final PvPAreaPlugin plugin;
-    private File statsFile;
-    private FileConfiguration statsConfig;
-
+    private final StatsStorage storage;
     private final Map<UUID, PlayerStats> stats = new HashMap<>();
+    private boolean dirty = false;
 
-    public StatsManager(PvPAreaPlugin plugin) {
+    public StatsManager(PvPAreaPlugin plugin, StatsStorage storage) {
         this.plugin = plugin;
+        this.storage = storage;
     }
 
-    public void loadStats() {
-        statsFile = new File(plugin.getDataFolder(), "stats.yml");
-        if (!statsFile.exists()) {
-            try {
-                statsFile.getParentFile().mkdirs();
-                statsFile.createNewFile();
-            } catch (IOException e) {
-                plugin.getLogger().severe("Could not create stats.yml");
-            }
-        }
-        statsConfig = YamlConfiguration.loadConfiguration(statsFile);
-
+    public void load() {
         stats.clear();
-        ConfigurationSection section = statsConfig.getConfigurationSection("players");
-        if (section != null) {
-            for (String uuidStr : section.getKeys(false)) {
-                try {
-                    UUID uuid = UUID.fromString(uuidStr);
-                    int kills = section.getInt(uuidStr + ".kills", 0);
-                    int deaths = section.getInt(uuidStr + ".deaths", 0);
-                    String name = section.getString(uuidStr + ".name", "Unknown");
-                    stats.put(uuid, new PlayerStats(uuid, name, kills, deaths));
-                } catch (IllegalArgumentException ignored) {}
-            }
-        }
+        storage.load(stats);
     }
 
-    public void saveStats() {
-        statsConfig.set("players", null);
-        for (Map.Entry<UUID, PlayerStats> entry : stats.entrySet()) {
-            PlayerStats ps = entry.getValue();
-            String path = "players." + entry.getKey().toString();
-            statsConfig.set(path + ".name", ps.getName());
-            statsConfig.set(path + ".kills", ps.getKills());
-            statsConfig.set(path + ".deaths", ps.getDeaths());
+    /** Snapshot current stats on the main thread and save them on an async thread. */
+    public void flush() {
+        if (!dirty) return;
+        List<PlayerStats> snapshot = new ArrayList<>(stats.size());
+        for (PlayerStats ps : stats.values()) {
+            snapshot.add(new PlayerStats(ps.getUuid(), ps.getName(), ps.getKills(), ps.getDeaths()));
         }
+        dirty = false;
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> storage.save(snapshot));
+    }
 
-        try {
-            statsConfig.save(statsFile);
-        } catch (IOException e) {
-            plugin.getLogger().severe("Could not save stats.yml");
+    /** Synchronous save + close. Intended for {@code onDisable}. */
+    public void close() {
+        if (dirty) {
+            storage.save(new ArrayList<>(stats.values()));
+            dirty = false;
         }
+        storage.close();
     }
 
     public PlayerStats getStats(UUID uuid, String name) {
-        return stats.computeIfAbsent(uuid, k -> new PlayerStats(uuid, name, 0, 0));
+        PlayerStats ps = stats.get(uuid);
+        if (ps == null) {
+            ps = new PlayerStats(uuid, name, 0, 0);
+            stats.put(uuid, ps);
+            dirty = true;
+        } else if (!ps.getName().equals(name)) {
+            ps.setName(name);
+            dirty = true;
+        }
+        return ps;
     }
 
     public void addKill(UUID uuid, String name) {
-        PlayerStats s = getStats(uuid, name);
-        s.addKill();
-        saveStats();
-        plugin.getHologramManager().updateHolograms();
+        getStats(uuid, name).addKill();
+        dirty = true;
     }
 
     public void addDeath(UUID uuid, String name) {
-        PlayerStats s = getStats(uuid, name);
-        s.addDeath();
-        saveStats();
+        getStats(uuid, name).addDeath();
+        dirty = true;
     }
 
     public List<PlayerStats> getTopKillers(int limit) {
+        if (stats.isEmpty()) return Collections.emptyList();
         List<PlayerStats> list = new ArrayList<>(stats.values());
-        list.sort((a, b) -> Integer.compare(b.getKills(), a.getKills())); // descending
-        return list.subList(0, Math.min(limit, list.size()));
-    }
-
-    public static class PlayerStats {
-        private final UUID uuid;
-        private String name;
-        private int kills;
-        private int deaths;
-
-        public PlayerStats(UUID uuid, String name, int kills, int deaths) {
-            this.uuid = uuid;
-            this.name = name;
-            this.kills = kills;
-            this.deaths = deaths;
-        }
-
-        public UUID getUuid() { return uuid; }
-        public String getName() { return name; }
-        public int getKills() { return kills; }
-        public int getDeaths() { return deaths; }
-        public void addKill() { kills++; }
-        public void addDeath() { deaths++; }
-
-        public double getKD() {
-            if (deaths == 0) return kills;
-            return Math.round(((double) kills / deaths) * 100.0) / 100.0;
-        }
+        list.sort((a, b) -> Integer.compare(b.getKills(), a.getKills()));
+        if (list.size() > limit) return new ArrayList<>(list.subList(0, limit));
+        return list;
     }
 }

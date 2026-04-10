@@ -3,12 +3,17 @@ version: '${project.version}'
 main: com.example.pvparea.PvPAreaPlugin
 api-version: '1.21'
 description: A plugin for PvP areas, stats, actionbars, and holograms
-author: You
+author: naonao0319
+
+libraries:
+  - org.xerial:sqlite-jdbc:3.45.3.0
+
+depend: [FancyHolograms]
 
 commands:
   pvparea:
     description: Main command for PvP Area management
-    usage: /pvparea <create|remove|hologram>
+    usage: /pvparea <create|remove|hologram|reload>
     permission: pvparea.admin
   killtop:
     description: View the top killers
@@ -22,4 +27,3 @@ permissions:
   pvparea.use:
     description: Use commands for PvP Area
     default: true
-depend: [FancyHolograms]

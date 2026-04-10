@@ -25,9 +25,7 @@ public class HologramManager {
         holoNames.clear();
         FileConfiguration config = plugin.getConfig();
         ConfigurationSection section = config.getConfigurationSection("holograms");
-        if (section != null) {
-            holoNames.addAll(section.getKeys(false));
-        }
+        if (section != null) holoNames.addAll(section.getKeys(false));
         updateHolograms();
     }
 
@@ -42,15 +40,12 @@ public class HologramManager {
 
     public void createHologram(String name, Location loc) {
         String fullName = "pvparea_" + name.toLowerCase();
-        
-        de.oliver.fancyholograms.api.HologramManager fhManager = FancyHologramsPlugin.get().getHologramManager();
-        
-        // Remove if exists
-        fhManager.getHologram(fullName).ifPresent(fhManager::removeHologram);
+        de.oliver.fancyholograms.api.HologramManager fh = FancyHologramsPlugin.get().getHologramManager();
+        fh.getHologram(fullName).ifPresent(fh::removeHologram);
 
         TextHologramData data = new TextHologramData(fullName, loc);
-        Hologram hologram = fhManager.create(data);
-        fhManager.addHologram(hologram);
+        Hologram hologram = fh.create(data);
+        fh.addHologram(hologram);
 
         holoNames.add(name.toLowerCase());
         saveHolograms();
@@ -59,16 +54,14 @@ public class HologramManager {
 
     public boolean removeHologram(String name) {
         String fullName = "pvparea_" + name.toLowerCase();
-        de.oliver.fancyholograms.api.HologramManager fhManager = FancyHologramsPlugin.get().getHologramManager();
-        
-        Hologram hologram = fhManager.getHologram(fullName).orElse(null);
+        de.oliver.fancyholograms.api.HologramManager fh = FancyHologramsPlugin.get().getHologramManager();
+        Hologram hologram = fh.getHologram(fullName).orElse(null);
         if (hologram != null) {
-            fhManager.removeHologram(hologram);
+            fh.removeHologram(hologram);
             holoNames.remove(name.toLowerCase());
             saveHolograms();
             return true;
         }
-        
         if (holoNames.remove(name.toLowerCase())) {
             saveHolograms();
             return true;
@@ -77,18 +70,19 @@ public class HologramManager {
     }
 
     public void clearHolograms() {
-        // Nothing to do since FancyHolograms handles despawning
+        // FancyHolograms handles despawning automatically.
     }
 
     public void updateHolograms() {
-        List<StatsManager.PlayerStats> topKillers = plugin.getStatsManager().getTopKillers(10);
-        List<String> lines = generateTopKillersLines(topKillers);
+        if (holoNames.isEmpty()) return;
+        int limit = plugin.getConfig().getInt("killtop.limit", 10);
+        List<PlayerStats> top = plugin.getStatsManager().getTopKillers(limit);
+        List<String> lines = buildLines(top);
 
-        de.oliver.fancyholograms.api.HologramManager fhManager = FancyHologramsPlugin.get().getHologramManager();
-
+        de.oliver.fancyholograms.api.HologramManager fh = FancyHologramsPlugin.get().getHologramManager();
         for (String name : holoNames) {
             String fullName = "pvparea_" + name;
-            Hologram hologram = fhManager.getHologram(fullName).orElse(null);
+            Hologram hologram = fh.getHologram(fullName).orElse(null);
             if (hologram != null && hologram.getData() instanceof TextHologramData textData) {
                 textData.setText(lines);
                 hologram.forceUpdate();
@@ -96,18 +90,22 @@ public class HologramManager {
         }
     }
 
-    private List<String> generateTopKillersLines(List<StatsManager.PlayerStats> topKillers) {
+    private List<String> buildLines(List<PlayerStats> top) {
         List<String> lines = new ArrayList<>();
-        lines.add("<gray>--- <gold><bold>Kill Top</bold></gold> ---</gray>");
-
-        if (topKillers.isEmpty()) {
-            lines.add("<gray>No data yet.</gray>");
-        } else {
-            int rank = 1;
-            for (StatsManager.PlayerStats stats : topKillers) {
-                lines.add("<yellow>#" + rank + "</yellow> <white>" + stats.getName() + "</white> <gray>-</gray> <red>" + stats.getKills() + " Kills</red>");
-                rank++;
-            }
+        lines.add(plugin.getConfig().getString("killtop.header", "<gray>--- Kill Top ---</gray>"));
+        if (top.isEmpty()) {
+            lines.add(plugin.getConfig().getString("killtop.empty", "<gray>No data yet.</gray>"));
+            return lines;
+        }
+        String template = plugin.getConfig().getString("killtop.line",
+                "<yellow>#{rank}</yellow> <white>{name}</white> <gray>-</gray> <red>{kills} Kills</red>");
+        int rank = 1;
+        for (PlayerStats ps : top) {
+            lines.add(template
+                    .replace("{rank}", String.valueOf(rank))
+                    .replace("{name}", ps.getName())
+                    .replace("{kills}", String.valueOf(ps.getKills())));
+            rank++;
         }
         return lines;
     }

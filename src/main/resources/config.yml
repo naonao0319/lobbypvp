@@ -1,4 +1,71 @@
-# PvPAreaPlugin configuration
-# Areas and holograms are populated automatically via commands.
+# ============================================
+#         PvPAreaPlugin Configuration
+#   All messages use MiniMessage formatting.
+# ============================================
+
+# Storage backend for player stats.
+# Options:
+#   sqlite - recommended for servers with many players (default)
+#   yaml   - plain file, fine for small servers
+storage:
+  type: sqlite
+  # How often (in ticks) to flush dirty stats to storage.
+  # 20 ticks = 1 second. Default: 6000 ticks (5 minutes).
+  save-interval-ticks: 6000
+
+# Effects played when a player is killed inside a PvP area.
+kill-effects:
+  sound:
+    enabled: true
+    name: ENTITY_PLAYER_LEVELUP
+    volume: 1.0
+    pitch: 1.2
+  particles:
+    enabled: true
+    type: CRIT
+    count: 12
+    offset-x: 0.3
+    offset-y: 0.6
+    offset-z: 0.3
+    speed: 0.05
+
+# Action bar shown while inside a PvP area.
+# Placeholders: {kills} {deaths} {kd} {ping}
+actionbar:
+  enabled: true
+  interval-ticks: 20
+  format: "<gold>PvP Area</gold> <dark_gray>|</dark_gray> <gray>Kills:</gray> <red>{kills}</red> <dark_gray>|</dark_gray> <gray>Deaths:</gray> <red>{deaths}</red> <dark_gray>|</dark_gray> <gray>K/D:</gray> <red>{kd}</red> <dark_gray>|</dark_gray> <gray>Ping:</gray> <green>{ping}ms</green>"
+
+# Kill top list (used by /killtop and holograms).
+# Hologram / line placeholders: {rank} {name} {kills}
+killtop:
+  limit: 10
+  hologram-refresh-ticks: 100
+  header: "<gray>---</gray> <gold><bold>Kill Top</bold></gold> <gray>---</gray>"
+  empty: "<gray>No data yet.</gray>"
+  line: "<yellow>#{rank}</yellow> <white>{name}</white> <dark_gray>-</dark_gray> <red>{kills} Kills</red>"
+
+# Chat / command messages.
+messages:
+  no-permission: "<red>You don't have permission to do this.</red>"
+  player-only: "<red>Only players can use this command.</red>"
+  unknown-subcommand: "<red>Unknown sub-command.</red>"
+  usage-root: "<red>Usage: /pvparea <create|remove|hologram|reload></red>"
+  usage-create: "<red>Usage: /pvparea create <name></red>"
+  usage-remove: "<red>Usage: /pvparea remove <name></red>"
+  usage-hologram: "<red>Usage: /pvparea hologram <create|remove> <name></red>"
+  pos1-set: "<green>Position 1 set to: <white>{x}, {y}, {z}</white></green>"
+  pos2-set: "<green>Position 2 set to: <white>{x}, {y}, {z}</white></green>"
+  need-selection: "<red>You must select two positions with a Golden Axe first.</red>"
+  area-created: "<green>PvP Area '<white>{name}</white>' created successfully!</green>"
+  area-not-same-world: "<red>Positions are not in the same world.</red>"
+  area-removed: "<green>PvP Area '<white>{name}</white>' removed.</green>"
+  area-not-found: "<red>Area not found.</red>"
+  hologram-created: "<green>Hologram '<white>{name}</white>' created at your location.</green>"
+  hologram-removed: "<green>Hologram removed.</green>"
+  hologram-not-found: "<red>Hologram not found.</red>"
+  config-reloaded: "<green>PvPAreaPlugin config reloaded.</green>"
+
+# DO NOT EDIT BELOW — managed by the plugin.
 areas: {}
 holograms: {}
