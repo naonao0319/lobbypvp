@@ -1,13 +1,17 @@
 package com.example.pvparea;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class CombatListener implements Listener {
 
@@ -29,6 +33,31 @@ public class CombatListener implements Listener {
         if (killer != null && !killer.equals(victim)) {
             plugin.getStatsManager().addKill(killer.getUniqueId(), killer.getName());
             playKillEffects(killer, victim);
+            giveKillRewards(killer);
+        }
+    }
+
+    private void giveKillRewards(Player killer) {
+        ConfigurationSection rewards = plugin.getConfig().getConfigurationSection("kill-rewards");
+        if (rewards == null) return;
+
+        ConfigurationSection apple = rewards.getConfigurationSection("golden-apple");
+        if (apple != null && apple.getBoolean("enabled", true)) {
+            int amount = Math.max(1, apple.getInt("amount", 3));
+            killer.getInventory().addItem(new ItemStack(Material.GOLDEN_APPLE, amount));
+        }
+
+        ConfigurationSection hp = rewards.getConfigurationSection("max-health");
+        if (hp != null && hp.getBoolean("enabled", true)) {
+            AttributeInstance attr = killer.getAttribute(Attribute.MAX_HEALTH);
+            if (attr == null) return;
+            double increase = hp.getDouble("increase", 5.0);
+            double cap = hp.getDouble("max", 40.0);
+            double current = attr.getBaseValue();
+            if (current >= cap) return;
+            double next = Math.min(cap, current + increase);
+            attr.setBaseValue(next);
+            killer.setHealth(Math.min(killer.getHealth() + (next - current), next));
         }
     }
 

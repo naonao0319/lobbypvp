@@ -18,6 +18,23 @@ storage:
   # 20 ticks = 1 second. Default: 6000 ticks (5 minutes).
   save-interval-ticks: 6000
 
+# Rewards given to the killer when they kill someone inside a PvP area.
+kill-rewards:
+  # Give the killer golden apples.
+  golden-apple:
+    enabled: true
+    amount: 3
+  # Permanently increase the killer's max health (per kill) up to a cap.
+  # Values are in half-hearts (20.0 = 10 hearts = vanilla default).
+  max-health:
+    enabled: true
+    increase: 5.0
+    max: 40.0
+
+# Announce to the whole server when a player enters a PvP area.
+area-entry:
+  broadcast: true
+
 # Effects played when a player is killed inside a PvP area.
 kill-effects:
   sound:

@@ -22,3 +22,4 @@ hologram-created: "&aホログラム '&f{name}&a' を現在地に作成しまし
 hologram-removed: "&aホログラムを削除しました。"
 hologram-not-found: "&cホログラムが見つかりません。"
 config-reloaded: "&aPvPAreaPlugin の設定をリロードしました。"
+area-enter-broadcast: "&e{player} &7が PvP エリア &f{area} &7に入りました！"

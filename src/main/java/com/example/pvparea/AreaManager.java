@@ -84,12 +84,16 @@ public class AreaManager {
     }
 
     public boolean isInAnyArea(Location loc) {
+        return getAreaAt(loc) != null;
+    }
+
+    public PvPArea getAreaAt(Location loc) {
         for (PvPArea area : areas.values()) {
             if (area.contains(loc)) {
-                return true;
+                return area;
             }
         }
-        return false;
+        return null;
     }
 
     public Set<String> getAreaNames() {
@@ -121,6 +125,7 @@ public class AreaManager {
             return x >= minX && x <= maxX && y >= minY && y <= maxY && z >= minZ && z <= maxZ;
         }
 
+        public String getName() { return name; }
         public World getWorld() { return world; }
         public int getMinX() { return minX; }
         public int getMinY() { return minY; }

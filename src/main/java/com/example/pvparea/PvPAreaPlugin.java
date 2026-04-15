@@ -47,6 +47,7 @@ public class PvPAreaPlugin extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new SelectionListener(this), this);
         getServer().getPluginManager().registerEvents(new CombatListener(this), this);
+        getServer().getPluginManager().registerEvents(new AreaEntryListener(this), this);
 
         CommandManager cmdManager = new CommandManager(this);
         getCommand("pvparea").setExecutor(cmdManager);
